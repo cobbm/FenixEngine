@@ -1,7 +1,11 @@
-#include "vram.h"
+#include "vram.hpp"
 
 #include <pspge.h>
 #include <pspgu.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 static unsigned int staticOffset = 0;
 
@@ -44,3 +48,7 @@ void* getStaticVramTexture(unsigned int width, unsigned int height, unsigned int
 	void* result = getStaticVramBuffer(width,height,psm);
 	return (void*)(((unsigned int)result) + ((unsigned int)sceGeEdramGetAddr()));
 }
+
+#ifdef __cplusplus
+}
+#endif

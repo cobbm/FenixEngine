@@ -1,0 +1,75 @@
+
+#include <iostream>
+#include <list>
+#include <memory>
+
+using namespace std;
+
+class GameObject;
+
+class Behaviour {
+public:
+    Behaviour()=delete;
+
+    Behaviour(const GameObject& owner): gameObject(owner) {};
+    // Behaviour(int test) {
+    //     cout<<"Hello!!!"<<endl;
+    // };
+    virtual void Start() = 0;
+    virtual void Update() = 0;
+    
+protected:
+     const GameObject &gameObject;
+};
+
+class GameObject {
+    public:
+        GameObject(){};
+        
+        template <typename T>
+        Behaviour& addComponent(){
+            Behaviour* component = new T(*this); 
+            m_components.push_back(std::unique_ptr<Behaviour>(component));
+            return *component;
+        }
+        void onUpdate(){
+          for(const auto &behaviour:m_components){
+            behaviour->Update();
+          }
+        }
+        
+        std::string myLabel;
+    private:
+    list<std::unique_ptr<Behaviour>> m_components;
+};
+
+class myBehaviour : public Behaviour {
+    public:
+    // myBehaviour(const GameObject &go):Behaviour(go){};
+    using Behaviour::Behaviour;
+    void Start() override {
+        //this.gameObject = someOtherObject; //compile error
+        //this.gameObject.someNonConstMethod(); //ok
+    }
+    
+    void Update() override{
+        //this.gameObject.translation = new Vector3(....);
+        cout<<"Hello from Behaviour! I says: \"" << this->gameObject.myLabel<<"\"" << endl;
+    }
+};
+
+//gameObject.addComponent<myBehaviour>();
+
+
+int main()
+{
+    GameObject g;
+    g.myLabel = "I am a GameObject";
+    
+    //somewhere else
+    g.addComponent<myBehaviour>();
+    // cout<<"Hello World";
+    g.onUpdate();
+
+    return 0;
+}

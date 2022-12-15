@@ -15,6 +15,10 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static int exitRequest = 0;
 
 int running()
@@ -52,3 +56,7 @@ int setupCallbacks(void)
 
 	return thid;
 }
+
+#ifdef __cplusplus
+}
+#endif

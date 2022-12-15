@@ -1,0 +1,55 @@
+SRC_DIR := src
+COMMON_DIR := common
+# OBJ_DIR := obj
+# BIN_DIR := bin
+
+TARGET = fenixEngine
+# OBJS = rendertarget.o
+
+PSP_FW_VERSION = 550
+BUILD_PRX = 1
+
+COMMON_SRC := $(wildcard $(COMMON_DIR)/*.c) $(wildcard $(COMMON_DIR)/*.cpp)
+
+FENIX_DIR := fenix
+# FENIX_SRC = $(wildcard $(FENIX_DIR)/src/*.cpp) 
+
+SRC := $(wildcard $(SRC_DIR)/*.cpp) $(COMMON_SRC) demos/TestApplication/TestApplication.cpp demos/TestApplication/main.cpp
+OBJS := $(SRC:%.cpp=%.o) 
+OBJS := $(OBJS:%.c=%.o)
+
+INCDIR = include
+CFLAGS = -G0 -Wall -std=c++17 -lstdc++ -lm -lpspmath 
+# CXXFLAGS = $(CFLAGS) -fno-exceptions -fno-rtti
+CXXFLAGS = $(CFLAGS) -fno-exceptions -Isrc/ -Icommon/
+ASFLAGS = $(CFLAGS)
+
+LIBDIR = 
+LDFLAGS = 
+LIBS = -lstdc++ -lpspgum_vfpu -lpspvfpu -lpspgu -lm -lpsprtc -lpspmath 
+
+EXTRA_TARGETS = EBOOT.PBP
+PSP_EBOOT_TITLE = FenixEngine Sample
+
+# Set your pspdev directory:
+PSPDEV := ~/opt/pspdev/bin
+PATH  := $(PATH):$(PSPDEV)
+SHELL := env PATH=$(PATH) /bin/bash
+
+PSPSDK=$(shell psp-config --pspsdk-path)
+
+
+include $(PSPSDK)/lib/build.mak
+
+$(COMMON_DIR)/font.cpp : $(COMMON_DIR)/font.raw
+	bin2c $< $@ font
+
+test:
+	open /Applications/PPSSPPSDL.app --args "$(shell pwd)/$(EXTRA_TARGETS)" 
+
+upload:
+	cp $(EXTRA_TARGETS) /Volumes/Untitled/PSP/GAME/fenix/
+
+unmount:
+	diskutil umountDisk /dev/disk4
+
